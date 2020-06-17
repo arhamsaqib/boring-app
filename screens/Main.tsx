@@ -1,6 +1,24 @@
-import React, {memo, useEffect, useState, useMemo, ComponentType} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, {
+  memo,
+  useEffect,
+  useState,
+  useMemo,
+  ComponentType,
+  useCallback,
+} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import {Icon} from 'react-native-elements';
+import {useStore} from 'react-redux';
+import {ReduxProjectAction, ProjectAction} from '../types';
+import {Project} from 'entities';
+import {ProjectActions} from '../actions';
+
 interface HeaderBlue {
   title: string;
 }
@@ -105,16 +123,68 @@ const NoProjectAdded = memo((props: NoProjectAddProps) => {
 });
 
 const Main = ({navigation}) => {
-  const onNewProj = () => {
-    navigation.push('Project Details');
-  };
+  const store = useStore();
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  store.subscribe(() => {
+    setProjects(store.getState().projects);
+  });
+  // console.log('state', store.getState());
+
+  // const onNewProj = () => {
+
+  //   // navigation.push('Project Details');
+  // };
+
+  const onNewProj = useCallback(() => {
+    store.dispatch(
+      ProjectActions.addProject({
+        name: 'Project 1',
+        client: 'Sarmad',
+        number: '123123',
+        location: 'Pakistan',
+      }),
+    );
+  }, [store]);
+
+  const onRemove = useCallback(
+    (index: number) => {
+      store.dispatch(ProjectActions.removeProject(index));
+    },
+    [store],
+  );
+
+  const onUpdate = useCallback(
+    (index: number) => {
+      store.dispatch(
+        ProjectActions.updateProject(index, {
+          name: 'Project 2',
+          client: 'Sarmad',
+          number: '123123',
+          location: 'Pakistan',
+        }),
+      );
+    },
+    [store],
+  );
 
   return (
-    <View>
+    <SafeAreaView>
       <NoProjectAdded onAdd={onNewProj} header={HeaderBlue}>
         <Text>No Projects</Text>
       </NoProjectAdded>
-    </View>
+      {projects.map((project, index) => (
+        <View key={index} style={{flexDirection: 'row', margin: 5}}>
+          <Text style={{flex: 1}}>{project.name}</Text>
+          <TouchableOpacity onPress={() => onUpdate(index)}>
+            <Text>Update</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => onRemove(index)}>
+            <Text>Remove</Text>
+          </TouchableOpacity>
+        </View>
+      ))}
+    </SafeAreaView>
   );
 };
 const styles = StyleSheet.create({

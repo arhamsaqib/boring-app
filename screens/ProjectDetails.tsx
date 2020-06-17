@@ -5,22 +5,17 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  BackHandler,
 } from 'react-native';
-import {connect, useStore} from 'react-redux';
+import {useStore} from 'react-redux';
 //import {Client} from '../actions/ProjectDetailsAction';
 import {useDispatch, useSelector} from 'react-redux';
 import Icon from 'react-native-vector-icons/SimpleLineIcons';
-import {Client} from '../actions/User';
 
 //import AsyncStorage from '@react-native-community/async-storage';
-const ProjectDetails = ({navigation, clientValue}) => {
-  const dispatch = useDispatch();
-  dispatch(Client({HELLO: 'ARHAM'}));
+const ProjectDetails = ({navigation}) => {
+  // const dispatch = useDispatch();
+  // dispatch(Client({HELLO: 'ARHAM'}));
   const details = useSelector((state) => state);
-  console.log(details, 'detailsVal');
-  //console.log(clientValue, 'clientValue');
-  const [id, setId] = useState(0);
   function nextScreen() {
     navigation.push('BoringPoints');
   }

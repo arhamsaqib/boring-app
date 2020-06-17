@@ -3,10 +3,9 @@ import BoringApp from './BoringApp';
 import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 import {YellowBox} from 'react-native';
-import ProjectDetailsReducers from './reducers/ProjectDetailsReducers';
+import {combinedReducers} from './reducers';
 
-const func = () => {};
-const store = createStore(func);
+const store = createStore(combinedReducers);
 
 const App = () => {
   YellowBox.ignoreWarnings(['Require cycle:']);

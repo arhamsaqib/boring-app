@@ -1,6 +1,4 @@
-import React, {useContext} from 'react';
-import {StyleSheet, View, Button} from 'react-native';
-import LoadingScreen from './screens/LoadingScreen';
+import React from 'react';
 import Main from './screens/Main';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -98,6 +96,5 @@ const BoringApp = () => {
     </NavigationContainer>
   );
 };
-const styles = StyleSheet.create({});
 
 export default BoringApp;
