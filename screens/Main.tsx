@@ -15,7 +15,6 @@ import {
 } from 'react-native';
 import {Icon} from 'react-native-elements';
 import {useStore} from 'react-redux';
-import {ReduxProjectAction, ProjectAction} from '../types';
 import {Project} from 'entities';
 import {ProjectActions} from '../actions';
 
