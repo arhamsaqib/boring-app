@@ -1,4 +1,5 @@
 import React from 'react';
+import {StyleSheet} from 'react-native';
 import Main from './screens/Main';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
@@ -9,18 +10,10 @@ import PointDetailsTabs from './screens/PointDetailsTabs';
 import NewSample from './screens/NewSample';
 import Lithology from './screens/Lithology';
 import Remarks from './screens/Remarks';
-//import {useStore} from 'react-redux';
+import CloudProjects from './screens/CloudProjects';
 
 const stack = createStackNavigator();
 const BoringApp = () => {
-  //const store = useStore();
-  //console.log(store, 'storeValue');
-  //store.dispatch({type: 'PointID', payload: 'kuxh'});
-  //  store.dispatch({type: 'something', payload: 'kuCh'});
-  //console.log(store.getState(), 'state');
-  // const store = useContext(ReactReduxContext);
-  //props.store.subscribe(() => console.log(props.store.getState()));
-  //console.log(store);
   return (
     <NavigationContainer>
       <stack.Navigator>
@@ -92,9 +85,19 @@ const BoringApp = () => {
             headerTitleAlign: 'center',
           }}
         />
+        <stack.Screen
+          name="Cloud"
+          component={CloudProjects}
+          options={{
+            headerStyle: {backgroundColor: '#1a4572'},
+            headerTintColor: 'white',
+            headerTitleAlign: 'center',
+          }}
+        />
       </stack.Navigator>
     </NavigationContainer>
   );
 };
+const styles = StyleSheet.create({});
 
 export default BoringApp;

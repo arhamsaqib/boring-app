@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -22,6 +22,8 @@ import {
   MoistureVal,
   RMRVal,
 } from '../allValues/LithologyValues';
+import {useStore, useSelector} from 'react-redux';
+import {addProject, updateProject} from '../actions/LithologyDetailsActions';
 
 const ModalView = (props) => {
   function selectedItem(item) {
@@ -52,22 +54,22 @@ const ModalView = (props) => {
 
 const ShowComp = (props) => {
   const [modalVisibility, setModalVisibility] = useState(false);
-  const [value, setValue] = useState('---');
+  // const [value, setValue] = useState('---');
   function setModalVis() {
     setModalVisibility(!modalVisibility);
   }
   function selectedVal(item) {
     // console.log(item);
-    setValue(item);
+    // setValue(item);
     props.userSelection(item);
   }
-  console.log(value + props.name);
+  console.log(props.value + props.name);
   return (
     <View style={styles.DMView}>
       <Text style={styles.DMText}>{props.name}</Text>
       <TouchableOpacity onPress={setModalVis}>
         <View>
-          <Text style={styles.DMText}>{value}</Text>
+          <Text style={styles.DMText}>{props.value}</Text>
         </View>
       </TouchableOpacity>
       <ModalView
@@ -80,10 +82,12 @@ const ShowComp = (props) => {
   );
 };
 
-const Depth = () => {
-  const [value, setValue] = useState('0');
+const Depth = (props) => {
+  // const [value, setValue] = useState('0');
+
   function inputHander(inputText) {
-    setValue(inputText);
+    //setValue(inputText);
+    props.saveval(inputText);
   }
   return (
     <View style={styles.DMView}>
@@ -91,17 +95,19 @@ const Depth = () => {
       <TextInput
         keyboardType="number-pad"
         onChangeText={inputHander}
-        value={value}
+        value={props.value}
         maxLength={12}
       />
     </View>
   );
 };
 
-const Bottom = () => {
-  const [value, setValue] = useState('0');
+const Bottom = (props) => {
+  // const [value, setValue] = useState('0');
+
   function inputHander(inputText) {
-    setValue(inputText);
+    //setValue(inputText);
+    props.saveval(inputText);
   }
   return (
     <View style={styles.DMView}>
@@ -109,134 +115,308 @@ const Bottom = () => {
       <TextInput
         keyboardType="number-pad"
         onChangeText={inputHander}
-        value={value}
+        value={props.value}
         maxLength={12}
       />
     </View>
   );
 };
 
-const Graphic = () => {
-  const [value, setValue] = useState('---');
+const Graphic = (props) => {
+  //  const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = GraphicVal;
 
   return (
-    <ShowComp name={'Graphic'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Graphic'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const USCSName = () => {
-  const [value, setValue] = useState('---');
+const USCSName = (props) => {
+  //const [value, setValue] = useState('---');
+  // props.saveval(value);
   var options = USCSNameVal;
 
   return (
-    <ShowComp name={'USCS Name'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'USCS Name'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const Consistency = () => {
-  const [value, setValue] = useState('---');
+const Consistency = (props) => {
+  // const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = ConsistencyVal;
   return (
-    <ShowComp name={'Consistency'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Consistency'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
 const Color = (props) => {
-  const [value, setValue] = useState('---');
+  //const [value, setValue] = useState('---');
+  // props.saveval(value);
   var options = ColorVal;
 
   return (
-    <ShowComp name={props.name} options={options} userSelection={setValue} />
+    <ShowComp
+      name={props.name}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const GrainSize = () => {
-  const [value, setValue] = useState('---');
+const GrainSize = (props) => {
+  //const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = GrainSizeVal;
 
   return (
-    <ShowComp name={'Grain Size'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Grain Size'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const Plasticity = () => {
-  const [value, setValue] = useState('---');
+const Plasticity = (props) => {
+  // const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = PlasticityVal;
 
   return (
-    <ShowComp name={'Plasticity'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Plasticity'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const Moisture = () => {
-  const [value, setValue] = useState('---');
+const Moisture = (props) => {
+  //const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = MoistureVal;
 
   return (
-    <ShowComp name={'Moisture'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Moisture'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const RMR = () => {
-  const [value, setValue] = useState('---');
+const RMR = (props) => {
+  // const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = RMRVal;
 
-  return <ShowComp name={'RMR'} options={options} userSelection={setValue} />;
+  return (
+    <ShowComp
+      name={'RMR'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
+  );
 };
 
-const Description = () => {
-  const [value, setValue] = useState('');
+const Description = (props) => {
+  // const [value, setValue] = useState('');
+  //props.saveval(value);
   function inputHander(inputText) {
-    setValue(inputText);
+    //setValue(inputText);
+    props.saveval(inputText);
   }
   return (
     <View style={styles.DMView}>
       <Text style={styles.DMText}>Additional Description</Text>
-      <TextInput onChangeText={inputHander} value={value} />
+      <TextInput onChangeText={inputHander} value={props.value} />
     </View>
   );
 };
 
-const Deposition = () => {
-  const [value, setValue] = useState('---');
+const Deposition = (props) => {
+  //const [value, setValue] = useState('---');
+  // props.saveval(value);
   var options = DepositionVal;
 
   return (
-    <ShowComp name={'Deposition'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Deposition'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const Linetype = () => {
-  const [value, setValue] = useState('---');
+const Linetype = (props) => {
+  //  const [value, setValue] = useState('---');
+  //props.saveval(value);
   var options = LineTypeVal;
 
   return (
-    <ShowComp name={'Line Type'} options={options} userSelection={setValue} />
+    <ShowComp
+      name={'Line Type'}
+      options={options}
+      userSelection={props.saveval}
+      value={props.value}
+    />
   );
 };
 
-const Lithology = ({navigation}) => {
+const Lithology = ({navigation, route}) => {
+  const [depth, setdepth] = useState('0');
+  const [bottom, setbottom] = useState('0');
+  const [graphic, setgraphic] = useState('---');
+  const [uscs, setuscs] = useState('---');
+  const [consistency, setconsistency] = useState('---');
+  const [color, setcolor] = useState('---');
+  const [addcolor1, setaddcolor1] = useState('---');
+  const [addcolor2, setaddcolor2] = useState('---');
+  const [grainsize, setgrainsize] = useState('---');
+  const [plasticity, setplasticity] = useState('---');
+  const [moisture, setmoisture] = useState('---');
+  const [rmr, setrmr] = useState('---');
+  const [addDescription, setaddDescription] = useState('---');
+  const [deposition, setdeposition] = useState('---');
+  const [linetype, setlinetype] = useState('---');
+  const [upd, setUpd] = useState(false);
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (route.params !== undefined) {
+      // console.log(route.params.project, 'current sample ');
+      setdepth(route.params.project.depth);
+      setbottom(route.params.project.bottom);
+      setgraphic(route.params.project.graphic);
+      setuscs(route.params.project.uscs);
+      setconsistency(route.params.project.consistency);
+      setcolor(route.params.project.color);
+      setaddcolor1(route.params.project.addcolor1);
+      setaddcolor2(route.params.project.addcolor2);
+      setgrainsize(route.params.project.grainsize);
+      setplasticity(route.params.project.plasticity);
+      setmoisture(route.params.project.moisture);
+      setrmr(route.params.project.rmr);
+      setaddDescription(route.params.project.addDescription);
+      setdeposition(route.params.project.deposition);
+      setlinetype(route.params.project.linetype);
+      setUpd(true);
+      setIndex(route.params.index);
+    }
+  }, []);
+  const store = useStore();
+  function updateValues() {
+    store.dispatch(
+      updateProject(index, {
+        projectNum: currentProject,
+        pointNum: currentPoint,
+        depth: depth,
+        bottom: bottom,
+        graphic: graphic,
+        uscs: uscs,
+        consistency: consistency,
+        color: color,
+        addcolor1: addcolor1,
+        addcolor2: addcolor2,
+        grainsize: grainsize,
+        plasticity: plasticity,
+        moisture: moisture,
+        rmr: rmr,
+        addDescription: addDescription,
+        deposition: deposition,
+        linetype: linetype,
+      }),
+    );
+  }
+
+  function saveValues() {
+    if (upd) {
+      console.log('updating lithology');
+      updateValues();
+    } else {
+      console.log('adding lithiloguy');
+      store.dispatch(
+        addProject({
+          projectNum: currentProject,
+          pointNum: currentPoint,
+          depth: depth,
+          bottom: bottom,
+          graphic: graphic,
+          uscs: uscs,
+          consistency: consistency,
+          color: color,
+          addcolor1: addcolor1,
+          addcolor2: addcolor2,
+          grainsize: grainsize,
+          plasticity: plasticity,
+          moisture: moisture,
+          rmr: rmr,
+          addDescription: addDescription,
+          deposition: deposition,
+          linetype: linetype,
+        }),
+      );
+    }
+    navigation.pop();
+  }
+
+  const currentProject = useSelector((state) => state.CurrentProject);
+  const currentPoint = useSelector((state) => state.CurrentPoint.pointId);
+
   return (
     <View style={styles.mainCont}>
       <ScrollView>
-        <Depth />
-        <Bottom />
-        <Graphic />
-        <USCSName />
-        <Consistency />
-        <Color name={'Color'} />
-        <Color name={'Additional Color 1'} />
-        <Color name={'Additional Color 2'} />
-        <GrainSize />
-        <Plasticity />
-        <Moisture />
-        <RMR />
-        <Description />
-        <Deposition />
-        <Linetype />
+        <Depth value={depth} saveval={(v) => setdepth(v)} />
+        <Bottom value={bottom} saveval={(v) => setbottom(v)} />
+        <Graphic value={graphic} saveval={(v) => setgraphic(v)} />
+        <USCSName value={uscs} saveval={(v) => setuscs(v)} />
+        <Consistency value={consistency} saveval={(v) => setconsistency(v)} />
+        <Color value={color} name={'Color'} saveval={(v) => setcolor(v)} />
+        <Color
+          value={addcolor1}
+          name={'Additional Color 1'}
+          saveval={(v) => setaddcolor1(v)}
+        />
+        <Color
+          value={addcolor2}
+          name={'Additional Color 2'}
+          saveval={(v) => setaddcolor2(v)}
+        />
+        <GrainSize value={grainsize} saveval={(v) => setgrainsize(v)} />
+        <Plasticity value={plasticity} saveval={(v) => setplasticity(v)} />
+        <Moisture value={moisture} saveval={(v) => setmoisture(v)} />
+        <RMR value={rmr} saveval={(v) => setrmr(v)} />
+        <Description
+          value={addDescription}
+          saveval={(v) => setaddDescription(v)}
+        />
+        <Deposition value={deposition} saveval={(v) => setdeposition(v)} />
+        <Linetype value={linetype} saveval={(v) => setlinetype(v)} />
         <View style={styles.button}>
-          <Button title="Add new Lithology" onPress={() => {}} />
+          <Button title="Save" onPress={saveValues} />
         </View>
       </ScrollView>
     </View>

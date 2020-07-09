@@ -1,5 +1,6 @@
 import React from 'react';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {TabActions} from '@react-navigation/native';
 import NewPoint from './NewPoint';
 import AllSamples from './AllSamples';
 import AllLithologies from './AllLithologies';

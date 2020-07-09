@@ -1,26 +1,24 @@
-import React, {
-  memo,
-  useEffect,
-  useState,
-  useMemo,
-  ComponentType,
-  useCallback,
-} from 'react';
+import React, {memo, useEffect, useState, useMemo} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
+  ScrollView,
+  BackHandler,
+  Alert,
 } from 'react-native';
+import {useStore, useSelector} from 'react-redux';
 import {Icon} from 'react-native-elements';
-import {useStore} from 'react-redux';
-import {Project} from 'entities';
-import {ProjectActions} from '../actions';
+import IconSLI from 'react-native-vector-icons/SimpleLineIcons';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {removeProject} from '../actions/ProjectDetailsActions';
+import setCurrentProject from '../actions/CurrentProjectAction';
 
 interface HeaderBlue {
   title: string;
 }
+
 const HeaderBlue = (props: HeaderBlue) => {
   return (
     <View style={styles.headerMain}>
@@ -44,14 +42,14 @@ const HeaderBlue = (props: HeaderBlue) => {
     //Header Component End
   );
 };
-const HeaderGreen = () => {
+const Header = ({navigation}) => {
   return (
-    <View style={[styles.headerMain, {backgroundColor: 'green'}]}>
+    <View style={[styles.headerMain]}>
       <View style={styles.headerName}>
         <Text style={styles.titleName}>Projects</Text>
       </View>
       <View style={styles.headerElements}>
-        <TouchableOpacity onPress={() => console.log('Download Icon')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Cloud')}>
           <Icon
             name="cloud-download"
             type="simple-line-icons"
@@ -59,7 +57,7 @@ const HeaderGreen = () => {
             color="white"
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log('ADD Icon')}>
+        <TouchableOpacity onPress={() => navigation.push('Project Details')}>
           <Text style={styles.elem1}>+</Text>
         </TouchableOpacity>
       </View>
@@ -69,19 +67,24 @@ const HeaderGreen = () => {
 };
 
 interface NoProjectAddProps {
-  header: ComponentType<HeaderBlue>;
   children?: React.ReactElement;
   onAdd(): void;
+  cloud(): void;
 }
 
 const NoProjectAdded = memo((props: NoProjectAddProps) => {
-  const {header, onAdd} = props;
-  const Header = header;
   const [state, setState] = useState<number>(0);
   useEffect(() => {
     //console.log('onMount');
     //return () => console.log('onUnmount');
   }, []);
+
+  const [projects, setProjects] = useState([]);
+  const store = useStore();
+  store.subscribe(() => {
+    setProjects(store.getState());
+  });
+  //console.log(projects, 'InStore');
 
   //console.log('Render');
   const isEven = state % 3 === 0;
@@ -92,11 +95,9 @@ const NoProjectAdded = memo((props: NoProjectAddProps) => {
 
   return (
     <View>
-      <Header title={'Project'} />
       <View style={styles.npaNoteCont}>
         <Text style={styles.npaNote}>
-          You have no project. Create new project or import it from the cloud.{' '}
-          {isEven ? 'Even' : 'Odd'}
+          You have no project. Create new project or import it from the cloud.
         </Text>
       </View>
       <TouchableOpacity onPress={props.onAdd}>
@@ -105,7 +106,7 @@ const NoProjectAdded = memo((props: NoProjectAddProps) => {
           <Text style={styles.buttonText}>Create First Project</Text>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setState(state + 1)}>
+      <TouchableOpacity onPress={props.cloud}>
         <View style={styles.buttonView2}>
           <Icon
             name="cloud-download"
@@ -121,69 +122,91 @@ const NoProjectAdded = memo((props: NoProjectAddProps) => {
   );
 });
 
-const Main = ({navigation}) => {
+const SwipeRightAction = ({project}) => {
   const store = useStore();
-  const [projects, setProjects] = useState<Project[]>([]);
-
-  store.subscribe(() => {
-    setProjects(store.getState().projects);
-  });
-  // console.log('state', store.getState());
-
-  // const onNewProj = () => {
-
-  //   // navigation.push('Project Details');
-  // };
-
-  const onNewProj = useCallback(() => {
-    store.dispatch(
-      ProjectActions.addProject({
-        name: 'Project 1',
-        client: 'Sarmad',
-        number: '123123',
-        location: 'Pakistan',
-      }),
+  function onpress() {
+    Alert.alert(
+      'Delete Project',
+      'This project will be deleted. Are you sure?',
+      [
+        {
+          text: 'No',
+          onPress: () => console.log('No Pressed'),
+          style: 'cancel',
+        },
+        {text: 'Yes', onPress: () => store.dispatch(removeProject(project))},
+      ],
     );
-  }, [store]);
-
-  const onRemove = useCallback(
-    (index: number) => {
-      store.dispatch(ProjectActions.removeProject(index));
-    },
-    [store],
-  );
-
-  const onUpdate = useCallback(
-    (index: number) => {
-      store.dispatch(
-        ProjectActions.updateProject(index, {
-          name: 'Project 2',
-          client: 'Sarmad',
-          number: '123123',
-          location: 'Pakistan',
-        }),
-      );
-    },
-    [store],
-  );
-
+    //   store.dispatch(removeProject(project));
+  }
   return (
-    <SafeAreaView>
-      <NoProjectAdded onAdd={onNewProj} header={HeaderBlue}>
-        <Text>No Projects</Text>
-      </NoProjectAdded>
-      {projects.map((project, index) => (
-        <View key={index} style={{flexDirection: 'row', margin: 5}}>
-          <Text style={{flex: 1}}>{project.name}</Text>
-          <TouchableOpacity onPress={() => onUpdate(index)}>
-            <Text>Update</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => onRemove(index)}>
-            <Text>Remove</Text>
-          </TouchableOpacity>
+    <TouchableOpacity onPress={onpress}>
+      <View style={styles.swipeRight}>
+        <IconSLI name="trash" color="white" />
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+const AllProjects = ({navigation}) => {
+  const details = useSelector((state) => state.ProjectDetails);
+  console.log(details, 'state');
+  const store = useStore();
+  function SelectProject(project, index) {
+    store.dispatch(setCurrentProject(project.number));
+    navigation.navigate('Project Details', {project, index});
+  }
+  return (
+    <ScrollView>
+      {details.map((project, index) => (
+        <View key={index}>
+          <Swipeable
+            renderRightActions={() => <SwipeRightAction project={index} />}>
+            <TouchableOpacity
+              onPress={SelectProject.bind(globalThis, project, index)}>
+              <View style={styles.viewStyle}>
+                <Text style={styles.textStyle1}>{project.number}</Text>
+                <Text style={styles.textStyle2}>{project.name}</Text>
+                <Text style={styles.textStyle1}>{project.id}</Text>
+              </View>
+            </TouchableOpacity>
+          </Swipeable>
         </View>
       ))}
-    </SafeAreaView>
+    </ScrollView>
+  );
+};
+
+const Main = ({navigation}) => {
+  const onBackPress = () => {
+    // /console.log('Back Pressed');
+    BackHandler.exitApp();
+    return true;
+  };
+  BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  /* const firebase = useFirebase();
+  firebase
+    .database()
+    .ref('Projects')
+    .push({name: 'shuja', password: 'hahabisti123'});*/
+  const onNewProj = () => {
+    navigation.push('Project Details');
+  };
+  const details = useSelector((state) => state.ProjectDetails);
+  let pageToLoad = (
+    <NoProjectAdded
+      onAdd={onNewProj}
+      cloud={() => navigation.navigate('Cloud')}
+    />
+  );
+  if (details.length >= 1) {
+    pageToLoad = <AllProjects navigation={navigation} />;
+  }
+  return (
+    <View>
+      <Header navigation={navigation} />
+      {pageToLoad}
+    </View>
   );
 };
 const styles = StyleSheet.create({
@@ -255,6 +278,30 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     marginLeft: 10,
+  },
+  viewStyle: {
+    height: 100,
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
+    margin: 3,
+    justifyContent: 'center',
+  },
+  textStyle2: {
+    fontSize: 15,
+    marginLeft: 15,
+  },
+  textStyle1: {
+    fontSize: 12,
+    marginLeft: 15,
+    color: 'grey',
+    marginBottom: 2,
+  },
+  swipeRight: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red',
+    width: 70,
+    height: '90%',
   },
 });
 export default Main;
